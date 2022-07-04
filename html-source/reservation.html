@@ -16,6 +16,15 @@
       integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
       crossorigin="anonymous"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.2.0/dist/css/datepicker-bs5.min.css"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://unpkg.com/notie/dist/notie.min.css"
+    />
 
     <style>
       .my-footer {
@@ -25,6 +34,10 @@
         padding: 1em;
         color: white;
         font-size: 80%;
+      }
+
+      .notie-container {
+        box-shadow: none;
       }
 
       .room-image {
@@ -93,41 +106,56 @@
         <div class="col-md-3"></div>
         <div class="col-md-6">
           <h1 class="mt-5">Search For Availability</h1>
-         
-          <form action="reservation.html" method="get">
+
+          <form
+            action="reservation.html"
+            method="get"
+            novalidate
+            class="needs-validation"
+          >
             <div class="form-row">
               <div class="col">
-                <div class="mb-3">
-                  <label for="start_date" class="form-label">Starting Date</label>
-                  <input required type="date" class="form-control" id="start_date" name="start_date" aria-describedby="startDateHelp">
-                  <div id="startDateHelp" class="form-text">Enter your starting date in the form of YYYY-MM-DD</div>
+                <div class="form-row" id="reservation-dates">
+                  <div class="col">
+                    <input
+                      placeholder="Arrival date"
+                      required
+                      class="form-control"
+                      type="text"
+                      name="start"
+                    />
+                  </div>
+                  <div class="col">
+                    <input
+                      required
+                      placeholder="Leave date"
+                      type="text"
+                      class="form-control"
+                      name="end"
+                    />
+                  </div>
                 </div>
               </div>
-              <div class="col">
-              <div class="mb-3">
-                <label for="end_date" class="form-label">Ending Date</label>
-                <input required type="date" class="form-control" id="end_date" name="end_date" aria-describedby="startDateHelp">
-                <div id="endDateHelp" class="form-text">Enter your ending date in the form of YYYY-MM-DD</div>
-              </div>
-            
             </div>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">Search Availability</button>
+            <hr />
+            <button type="submit" class="btn btn-primary">
+              Search Availability
+            </button>
           </form>
         </div>
       </div>
+    </div>
 
-    <footer class="my-footer">
-      <div class="row">
-        <div class="col">left</div>
+    <footer class="row my-footer">
+      <div class="col">left</div>
 
-        <div class="col">center</div>
+      <div class="col">center</div>
 
-        <div class="col">right</div>
-      </div>
+      <div class="col">right</div>
     </footer>
 
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanillajs-datepicker@1.2.0/dist/js/datepicker-full.min.js"></script>
     <script
       src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
       integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
@@ -138,5 +166,107 @@
       integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
       crossorigin="anonymous"
     ></script>
+    <script src="https://unpkg.com/notie"></script>
+    <script>
+      (function () {
+        "use strict";
+        window.addEventListener(
+          "load",
+          function () {
+            let forms = document.getElementsByClassName("needs-validation");
+
+            let validation = Array.prototype.filter.call(
+              forms,
+              function (form) {
+                form.addEventListener(
+                  "submit",
+                  function (event) {
+                    if (form.checkValidity() === false) {
+                      event.preventDefault();
+                      event.stopPropagation();
+                    }
+
+                    form.classList.add("was-validated");
+                  },
+                  false
+                );
+              }
+            );
+          },
+          false
+        );
+      })();
+
+      const elem = document.getElementById("reservation-dates");
+      const rangePicker = new DateRangePicker(elem, {
+        format: "yyyy-mm-dd",
+      });
+
+      function notify(msg, msgType) {
+        notie.alert({
+          type: msgType, // optional, default = 4, enum: [1, 2, 3, 4, 5, 'success', 'warning', 'error', 'info', 'neutral']
+          text: msg,
+        });
+      }
+
+      function notifyModal(title, text, icon, confirmationButtonText) {
+        Swal.fire({
+          title,
+          html: text,
+          icon,
+          confirmButtonText,
+        });
+      }
+
+      function Prompt() {
+        let toast = function (c) {
+          const { msg = "", icon = "success", position = "top-end" } = c;
+        };
+
+        const Toast = Swal.mixin({
+          toast: true,
+          title: msg,
+          position,
+          icon,
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.addEventListener("mouseenter", Swal.stopTimer);
+            toast.addEventListener("mouseleave", Swal.resumeTimer);
+          },
+        });
+
+        Toast.fire({});
+
+        let success = function (c) {
+          const { msg = "", tite = "", footer = "" } = c;
+
+          Swal.fire({
+            icon: "success",
+            title,
+            text: msg,
+            footer,
+          });
+        };
+
+        let error = function (c) {
+          const { msg = "", tite = "", footer = "" } = c;
+
+          Swal.fire({
+            icon: "error",
+            title,
+            text: msg,
+            footer,
+          });
+        };
+
+        return {
+          toast,
+          success,
+          error,
+        };
+      }
+    </script>
   </body>
 </html>

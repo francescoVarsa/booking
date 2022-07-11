@@ -26,24 +26,7 @@
       href="https://unpkg.com/notie/dist/notie.min.css"
     />
 
-    <style>
-      .my-footer {
-        height: 5em;
-        background-color: #163b65;
-        margin-top: 1.5em;
-        padding: 1em;
-        color: white;
-        font-size: 80%;
-      }
-
-      .notie-container {
-        box-shadow: none;
-      }
-
-      .room-image {
-        max-width: 50%;
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="static/css/styles.css" />
   </head>
 
   <body>
@@ -142,6 +125,17 @@
               Search Availability
             </button>
           </form>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <p id="myParagraph">This is some text</p>
+          <p>
+            <button class="btn btn-outline-secondary" id="colorButton">
+              Click me
+            </button>
+          </p>
         </div>
       </div>
     </div>
@@ -261,10 +255,44 @@
           });
         };
 
+        async function custom(c) {
+          const { msg = "", title = "" } = c;
+
+          const { value: formValues } = await Swal.fire({
+            title: title,
+            html: msg,
+            backdrop: false,
+            showCancel: true,
+            focusConfirm: false,
+            willOpen: () => {
+              const elem = document.getElementById("reservatio-dates-modalS");
+              const rp = new DateRangePicker(elem, {
+                format: "yyyy-mm-dd",
+                showOnFocus: true,
+              });
+            },
+            preconfirm: () => {
+              return [
+                document.getElementById("swal-input1").value,
+                document.getElementById("swal-input2").value,
+              ];
+            },
+            didOpen: () => {
+              document.getElementById("start").removeAttribute("disabled");
+              document.getElementById("end").removeAttribute("disabled");
+            },
+          });
+
+          if (formValues) {
+            Swal.fire(JSON.stringify(formValues));
+          }
+        }
+
         return {
           toast,
           success,
           error,
+          custom,
         };
       }
     </script>

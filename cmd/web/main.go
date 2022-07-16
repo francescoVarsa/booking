@@ -3,7 +3,9 @@ package main
 import (
 	"booking/internal/config"
 	"booking/internal/handlers"
+	"booking/internal/models"
 	"booking/internal/render"
+	"encoding/gob"
 
 	"fmt"
 	"log"
@@ -20,6 +22,8 @@ var session *scs.SessionManager
 
 // main is the main application function
 func main() {
+	// What am I going to put in the session
+	gob.Register(models.Reservation{})
 	//Change this to true when in prod
 	app.InProduction = false
 
@@ -43,9 +47,6 @@ func main() {
 	handlers.NewHandlers(repo)
 
 	render.NewTemplates(&app)
-
-	// http.HandleFunc("/", handlers.Repo.Home)
-	// http.HandleFunc("/about", handlers.Repo.About)
 
 	fmt.Println(fmt.Sprintf("Starting application on port %s", portNumber))
 	// _ = http.ListenAndServe(portNumber, nil)

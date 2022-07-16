@@ -1,14 +1,13 @@
 package handlers
 
 import (
+	"booking/internal/config"
+	"booking/internal/models"
+	"booking/internal/render"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/francescoVarsallona/booking/pkg/config"
-	"github.com/francescoVarsallona/booking/pkg/models"
-	"github.com/francescoVarsallona/booking/pkg/render"
 )
 
 //Repository is the repository type

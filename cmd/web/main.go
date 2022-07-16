@@ -1,15 +1,16 @@
 package main
 
 import (
+	"booking/internal/config"
+	"booking/internal/handlers"
+	"booking/internal/render"
+
 	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
-	"github.com/francescoVarsallona/booking/pkg/config"
-	"github.com/francescoVarsallona/booking/pkg/handlers"
-	"github.com/francescoVarsallona/booking/pkg/render"
 )
 
 const portNumber = ":8080"

@@ -1,6 +1,8 @@
 package render
 
 import (
+	"booking/internal/config"
+	"booking/internal/models"
 	"bytes"
 	"fmt"
 	"log"
@@ -8,8 +10,6 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/francescoVarsallona/booking/pkg/config"
-	"github.com/francescoVarsallona/booking/pkg/models"
 	"github.com/justinas/nosurf"
 )
 

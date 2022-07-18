@@ -3,9 +3,11 @@ package main
 import (
 	"booking/internal/config"
 	"booking/internal/handlers"
+	"booking/internal/helpers"
 	"booking/internal/models"
 	"booking/internal/render"
 	"encoding/gob"
+	"os"
 
 	"fmt"
 	"log"
@@ -19,6 +21,8 @@ const portNumber = ":8080"
 
 var app config.AppConfig
 var session *scs.SessionManager
+var infoLog *log.Logger
+var errorLog *log.Logger
 
 // main is the main application function
 func main() {
@@ -45,6 +49,12 @@ func run() error {
 	//Change this to true when in prod
 	app.InProduction = false
 
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+
+	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
+
 	session = scs.New()
 	session.Lifetime = 24 * time.Hour
 	session.Cookie.Persist = true
@@ -65,6 +75,7 @@ func run() error {
 	handlers.NewHandlers(repo)
 
 	render.NewTemplates(&app)
+	helpers.NewHelpers(&app)
 
 	return nil
 }

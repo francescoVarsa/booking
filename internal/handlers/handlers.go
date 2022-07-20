@@ -2,10 +2,13 @@ package handlers
 
 import (
 	"booking/internal/config"
+	"booking/internal/driver"
 	"booking/internal/forms"
 	"booking/internal/helpers"
 	"booking/internal/models"
 	"booking/internal/render"
+	"booking/internal/repository"
+	"booking/internal/repository/dbrepo"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -15,15 +18,17 @@ import (
 //Repository is the repository type
 type Repository struct {
 	App *config.AppConfig
+	DB  repository.DatabaseRepo
 }
 
 //Repo the repository used by handlers
 var Repo *Repository
 
 //NewRepo creates a new repository
-func NewRepo(a *config.AppConfig) *Repository {
+func NewRepo(a *config.AppConfig, db *driver.DB) *Repository {
 	return &Repository{
 		App: a,
+		DB:  dbrepo.NewPostgresRepo(db.SQL, a),
 	}
 }
 

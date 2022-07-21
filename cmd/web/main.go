@@ -71,9 +71,12 @@ func run() (*driver.DB, error) {
 	app.Session = session
 
 	// connect to database
+	log.Println("Please insert your database password or leave it empty if your database has no password")
+	var pwd string
+	fmt.Scanln(&pwd)
 	log.Println("Connection to database...")
 	// Replace password with your password db
-	db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=francesco password=")
+	db, err := driver.ConnectSQL(fmt.Sprintf("host=localhost port=5432 dbname=bookings user=francesco password=%s", pwd))
 	if err != nil {
 		log.Fatal("Cannot connect to database! Dying...")
 	}

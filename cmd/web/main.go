@@ -49,6 +49,10 @@ func main() {
 func run() (*driver.DB, error) {
 	// What am I going to put in the session
 	gob.Register(models.Reservation{})
+	gob.Register(models.User{})
+	gob.Register(models.Room{})
+	gob.Register(models.Restriction{})
+
 	//Change this to true when in prod
 	app.InProduction = false
 
@@ -69,7 +73,7 @@ func run() (*driver.DB, error) {
 	// connect to database
 	log.Println("Connection to database...")
 	// Replace password with your password db
-	db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=francesco password=password")
+	db, err := driver.ConnectSQL("host=localhost port=5432 dbname=bookings user=francesco password=")
 	if err != nil {
 		log.Fatal("Cannot connect to database! Dying...")
 	}
@@ -86,7 +90,7 @@ func run() (*driver.DB, error) {
 	repo := handlers.NewRepo(&app, db)
 	handlers.NewHandlers(repo)
 
-	render.NewTemplates(&app)
+	render.NewRenderer(&app)
 	helpers.NewHelpers(&app)
 
 	return db, nil

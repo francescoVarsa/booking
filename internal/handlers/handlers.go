@@ -71,7 +71,7 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sd := r.Form.Get("start_date")
-	ed := r.Form.Get("end date")
+	ed := r.Form.Get("end_date")
 
 	// 2022-01-01 -- 01/01 03:04:05PM '22 -0700
 
@@ -122,10 +122,25 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = m.DB.InsertReservation(reservation)
+	newReservationId, err := m.DB.InsertReservation(reservation)
 
 	if err != nil {
 		helpers.ServerError(w, err)
+	}
+
+	restriction := models.RoomRestriction{
+		StartDate:     startDate,
+		EndDate:       endDate,
+		RoomID:        roomID,
+		ReservationID: newReservationId,
+		RestrictionID: 1,
+	}
+
+	err = m.DB.InsertRoomRestriction(restriction)
+
+	if err != nil {
+		helpers.ServerError(w, err)
+		return
 	}
 
 	m.App.Session.Put(r.Context(), "reservation", reservation)

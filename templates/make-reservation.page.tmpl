@@ -10,7 +10,8 @@
 
       <p>
         <strong>Reservation Details</strong>
-        Room: {{ $res.Room.RoomName }} Arrival:
+        Room: {{ $res.Room.RoomName }} <br />
+        Arrival:
         {{index .StringMap "start_date"}}
         <br />
         Departure: {{index .StringMap "end_date"}}
@@ -24,7 +25,9 @@
 
 
 
+
         }}" /> <input type="hidden" name="end_date" value="{{index .StringMap "end_date"
+
 
 
 

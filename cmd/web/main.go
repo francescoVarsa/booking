@@ -34,6 +34,19 @@ func main() {
 	}
 
 	defer db.SQL.Close()
+	defer close(app.MailChan)
+
+	fmt.Println("Starting mail listener...")
+	listenForMail()
+
+	// msg := models.MailData{
+	// 	To:      "jhon@do.ca",
+	// 	From:    "me@here.com",
+	// 	Subject: "Some subject",
+	// 	Content: "",
+	// }
+
+	// app.MailChan <- msg
 
 	fmt.Println(fmt.Sprintf("Starting application on port %s", portNumber))
 	// _ = http.ListenAndServe(portNumber, nil)
@@ -52,6 +65,9 @@ func run() (*driver.DB, error) {
 	gob.Register(models.User{})
 	gob.Register(models.Room{})
 	gob.Register(models.Restriction{})
+
+	mailChan := make(chan models.MailData)
+	app.MailChan = mailChan
 
 	//Change this to true when in prod
 	app.InProduction = false

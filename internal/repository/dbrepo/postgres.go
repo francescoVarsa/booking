@@ -4,6 +4,7 @@ import (
 	"booking/internal/models"
 	"context"
 	"errors"
+	"log"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -189,6 +190,7 @@ func (m *postgresDBRepo) Authenticate(email, testPassword string) (int, string, 
 	err := row.Scan(&id, &hashedPassword)
 
 	if err != nil {
+		log.Println("The error is here")
 		return id, "", err
 	}
 

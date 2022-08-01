@@ -637,6 +637,10 @@ func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Re
 		// get all restrictions for the current room
 		restrictions, err := m.DB.GetRestrictionsForRoomByDate(x.ID, firstOfMonth, lastOfMonth)
 
+		j, _ := json.Marshal(restrictions)
+		fmt.Println(string(j))
+		log.Print(restrictions)
+
 		if err != nil {
 			helpers.ServerError(w, err)
 			return

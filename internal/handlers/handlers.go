@@ -574,13 +574,12 @@ func (m *Repository) AdminShowReservation(w http.ResponseWriter, r *http.Request
 
 // AdminReservationsCalendar displays the reservation calendar
 func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Request) {
-	// Assume that there is no month/year specified
+	// assume that there is no month/year specified
 	now := time.Now()
 
 	if r.URL.Query().Get("y") != "" {
 		year, _ := strconv.Atoi(r.URL.Query().Get("y"))
 		month, _ := strconv.Atoi(r.URL.Query().Get("m"))
-
 		now = time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.UTC)
 	}
 
@@ -588,8 +587,7 @@ func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Re
 	data["now"] = now
 
 	next := now.AddDate(0, 1, 0)
-	last :=
-		now.AddDate(0, -1, 0)
+	last := now.AddDate(0, -1, 0)
 
 	nextMonth := next.Format("01")
 	nextMonthYear := next.Format("2006")
@@ -598,7 +596,6 @@ func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Re
 	lastMonthYear := last.Format("2006")
 
 	stringMap := make(map[string]string)
-
 	stringMap["next_month"] = nextMonth
 	stringMap["next_month_year"] = nextMonthYear
 	stringMap["last_month"] = lastMonth
@@ -607,16 +604,16 @@ func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Re
 	stringMap["this_month"] = now.Format("01")
 	stringMap["this_month_year"] = now.Format("2006")
 
-	// get first and last days of the month
+	// get the first and last days of the month
 	currentYear, currentMonth, _ := now.Date()
 	currentLocation := now.Location()
 	firstOfMonth := time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, currentLocation)
 	lastOfMonth := firstOfMonth.AddDate(0, 1, -1)
+
 	intMap := make(map[string]int)
 	intMap["days_in_month"] = lastOfMonth.Day()
 
 	rooms, err := m.DB.AllRooms()
-
 	if err != nil {
 		helpers.ServerError(w, err)
 		return
@@ -634,13 +631,8 @@ func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Re
 			blockMap[d.Format("2006-01-2")] = 0
 		}
 
-		// get all restrictions for the current room
+		// get all the restrictions for the current room
 		restrictions, err := m.DB.GetRestrictionsForRoomByDate(x.ID, firstOfMonth, lastOfMonth)
-
-		j, _ := json.Marshal(restrictions)
-		fmt.Println(string(j))
-		log.Print(restrictions)
-
 		if err != nil {
 			helpers.ServerError(w, err)
 			return
@@ -653,11 +645,10 @@ func (m *Repository) AdminReservationsCalendar(w http.ResponseWriter, r *http.Re
 					reservationMap[d.Format("2006-01-2")] = y.ReservationID
 				}
 			} else {
-				//it's a block
-				blockMap[y.StartDate.Format("2006-01-2")] = y.RestrictionID
+				// it's a block
+				blockMap[y.StartDate.Format("2006-01-2")] = y.ID
 			}
 		}
-
 		data[fmt.Sprintf("reservation_map_%d", x.ID)] = reservationMap
 		data[fmt.Sprintf("block_map_%d", x.ID)] = blockMap
 
@@ -713,16 +704,25 @@ func (m *Repository) AdminPostShowReservation(w http.ResponseWriter, r *http.Req
 	http.Redirect(w, r, fmt.Sprintf("/admin/reservations-%s", src), http.StatusSeeOther)
 }
 
-//AdminProcessReservation marks a reservation as processed
+// AdminProcessReservation  marks a reservation as processed
 func (m *Repository) AdminProcessReservation(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(chi.URLParam(r, "id"))
 	src := chi.URLParam(r, "src")
+	err := m.DB.UpdateProcessedForReservation(id, 1)
+	if err != nil {
+		log.Println(err)
+	}
 
-	_ = m.DB.UpdateProcessedForReservation(id, 1)
+	year := r.URL.Query().Get("y")
+	month := r.URL.Query().Get("m")
 
 	m.App.Session.Put(r.Context(), "flash", "Reservation marked as processed")
-	http.Redirect(w, r, fmt.Sprintf("/admin/reservations-%s", src), http.StatusSeeOther)
 
+	if year == "" {
+		http.Redirect(w, r, fmt.Sprintf("/admin/reservations-%s", src), http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, fmt.Sprintf("/admin/reservations-calendar?y=%s&m=%s", year, month), http.StatusSeeOther)
+	}
 }
 
 //DeleteReservation deletes a reservation
